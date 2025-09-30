@@ -36,4 +36,5 @@ dist-ssr
 
 # Build artifacts
 build/
-coverage/
+coverage/.DS_Store
+response.json

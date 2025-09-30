@@ -38,6 +38,11 @@ export const ParameterCollector: React.FC<ParameterCollectorProps> = ({
     fields.forEach(field => {
       if (field.defaultValue !== undefined) {
         obj[field.name] = field.defaultValue;
+      } else if (field.type === 'object' && field.fields) {
+        // Recursively create empty objects for nested structures
+        obj[field.name] = createEmptyObject(field.fields);
+      } else if (field.type === 'array') {
+        obj[field.name] = [];
       } else {
         obj[field.name] = '';
       }
@@ -78,14 +83,25 @@ export const ParameterCollector: React.FC<ParameterCollectorProps> = ({
   };
 
   const handleFieldChange = (path: string[], value: any) => {
+    console.log('handleFieldChange called with path:', path, 'value:', value);
+    
     const newData = { ...formData };
     let current = newData;
     
+    // Navigate to the parent object
     for (let i = 0; i < path.length - 1; i++) {
+      if (!current[path[i]]) {
+        console.warn(`Path segment ${path[i]} is undefined, creating empty object`);
+        current[path[i]] = {};
+      }
       current = current[path[i]];
     }
     
-    current[path[path.length - 1]] = value;
+    // Set the value
+    const fieldName = path[path.length - 1];
+    current[fieldName] = value;
+    
+    console.log('Updated formData:', newData);
     setFormData(newData);
     onParametersChange(newData);
   };
@@ -148,8 +164,15 @@ export const ParameterCollector: React.FC<ParameterCollectorProps> = ({
     const fieldId = fieldPath.join('.');
     let value = formData;
     
-    for (const p of fieldPath) {
+    // Navigate to the correct value in the formData
+    for (let i = 0; i < fieldPath.length; i++) {
+      const p = fieldPath[i];
       value = value?.[p];
+      if (value === undefined && i < fieldPath.length - 1) {
+        // If we hit undefined before reaching the end, something is wrong
+        console.warn(`Value undefined at path: ${fieldPath.slice(0, i + 1).join('.')}`);
+        break;
+      }
     }
 
     const error = errors[fieldId];
@@ -165,9 +188,14 @@ export const ParameterCollector: React.FC<ParameterCollectorProps> = ({
             <input
               id={fieldId}
               type={field.type}
+              name={`api-param-${fieldId}`}
               value={value || ''}
               onChange={(e) => handleFieldChange(fieldPath, e.target.value)}
               placeholder={field.placeholder}
+              autoComplete="new-password"
+              data-1p-ignore="true"
+              data-lpignore="true"
+              data-form-type="other"
               className={`w-full px-3 py-2 bg-[#2A2A2A] border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00ADB5] ${
                 error ? 'border-red-500' : 'border-gray-600'
               }`}
@@ -189,6 +217,9 @@ export const ParameterCollector: React.FC<ParameterCollectorProps> = ({
               id={fieldId}
               value={value || ''}
               onChange={(e) => handleFieldChange(fieldPath, e.target.value)}
+              autoComplete="off"
+              data-1p-ignore="true"
+              data-lpignore="true"
               className={`w-full px-3 py-2 bg-[#2A2A2A] border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00ADB5] ${
                 error ? 'border-red-500' : 'border-gray-600'
               }`}
@@ -286,6 +317,9 @@ export const ParameterCollector: React.FC<ParameterCollectorProps> = ({
                         });
                       }
                       
+                      console.log('Updated formData after oneOf selection:', newData);
+                      console.log('PaymentDetails:', current[fieldName]);
+                      
                       setFormData(newData);
                       onParametersChange(newData);
                     }}
@@ -298,14 +332,21 @@ export const ParameterCollector: React.FC<ParameterCollectorProps> = ({
             
             {selectedOption && selectedOneOfOption && (
               <div className="mt-4 pl-6 border-l-2 border-[#00ADB5] space-y-4">
-                {selectedOneOfOption.fields.map(subField => renderField(subField, fieldPath))}
+                {selectedOneOfOption.fields.map(subField => {
+                  // For oneOf fields, the path should include the oneOf field itself
+                  // fieldPath already contains the path to the oneOf field (e.g., ['paymentDetails'])
+                  return renderField(subField, fieldPath);
+                })}
               </div>
             )}
           </div>
         );
 
       case 'object':
-        const isExpanded = expandedSections[fieldId] !== false;
+        // Auto-expand objects within oneOf selections
+        const isWithinOneOf = path.some(p => p === 'paymentDetails' || p === 'documentSourceIdentifier' || p === 'recipientAddressSource');
+        const isExpanded = isWithinOneOf ? true : (expandedSections[fieldId] !== false);
+        
         return (
           <div key={fieldId} className="mb-4 border border-gray-700 rounded-lg p-4">
             <button
@@ -389,9 +430,15 @@ export const ParameterCollector: React.FC<ParameterCollectorProps> = ({
           No parameters required for this endpoint
         </p>
       ) : (
-        <div className="space-y-6">
+        <form 
+          autoComplete="off" 
+          onSubmit={(e) => e.preventDefault()}
+          data-1p-ignore="true"
+          data-lpignore="true"
+          className="space-y-6"
+        >
           {schema.map(field => renderField(field))}
-        </div>
+        </form>
       )}
     </div>
   );
