@@ -9,13 +9,27 @@ Built with **React, Vite, TailwindCSS**, and designed for extension with LLM/MCP
 - Animated transitions between steps
 - Endpoint recommendation result card
 - JWT example snippet + expandable JSON payload example
+- SDK code generation (Python, JavaScript, cURL)
+- **Live code execution** - run generated code directly in the browser
 - Configurable endpoint map (`src/data/endpointMap.ts`)
 
 ## 🛠️ Setup
+
+### Install dependencies
 ```bash
 npm install
-npm run dev
 ```
+
+### Run development servers
+```bash
+# Run both frontend and backend
+npm run dev:all
+
+# Or run separately:
+npm run dev     # Frontend on http://localhost:5173
+npm run server  # Backend on http://localhost:3001
+```
+
 Visit 👉 http://localhost:5173
 
 ## 📖 For AI Assistants (Claude Code, ChatGPT, etc.)
