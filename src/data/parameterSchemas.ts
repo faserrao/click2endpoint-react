@@ -337,7 +337,8 @@ export const parameterSchemas: EndpointParameters = {
                   label: 'Card Number',
                   type: 'text',
                   required: true,
-                  placeholder: '4111111111111111'
+                  placeholder: '4111111111111111',
+                  defaultValue: '4111111111111111'
                 },
                 {
                   name: 'expirationDate',
@@ -351,6 +352,7 @@ export const parameterSchemas: EndpointParameters = {
                       type: 'number',
                       required: true,
                       placeholder: '12',
+                      defaultValue: 12,
                       validation: {
                         min: 1,
                         max: 12
@@ -362,6 +364,7 @@ export const parameterSchemas: EndpointParameters = {
                       type: 'number',
                       required: true,
                       placeholder: '2025',
+                      defaultValue: 2025,
                       validation: {
                         min: 2024
                       }
@@ -373,7 +376,8 @@ export const parameterSchemas: EndpointParameters = {
                   label: 'CVV',
                   type: 'number',
                   required: true,
-                  placeholder: '123'
+                  placeholder: '123',
+                  defaultValue: 123
                 }
               ]
             }
@@ -658,7 +662,8 @@ export const parameterSchemas: EndpointParameters = {
                   label: 'Card Number',
                   type: 'text',
                   required: true,
-                  placeholder: '4111111111111111'
+                  placeholder: '4111111111111111',
+                  defaultValue: '4111111111111111'
                 },
                 {
                   name: 'expirationDate',
@@ -672,6 +677,7 @@ export const parameterSchemas: EndpointParameters = {
                       type: 'number',
                       required: true,
                       placeholder: '12',
+                      defaultValue: 12,
                       validation: {
                         min: 1,
                         max: 12
@@ -683,6 +689,7 @@ export const parameterSchemas: EndpointParameters = {
                       type: 'number',
                       required: true,
                       placeholder: '2025',
+                      defaultValue: 2025,
                       validation: {
                         min: 2024
                       }
@@ -694,7 +701,8 @@ export const parameterSchemas: EndpointParameters = {
                   label: 'CVV',
                   type: 'number',
                   required: true,
-                  placeholder: '123'
+                  placeholder: '123',
+                  defaultValue: 123
                 }
               ]
             }
@@ -1223,7 +1231,8 @@ export const parameterSchemas: EndpointParameters = {
                   label: 'Card Number',
                   type: 'text',
                   required: true,
-                  placeholder: '4111111111111111'
+                  placeholder: '4111111111111111',
+                  defaultValue: '4111111111111111'
                 },
                 {
                   name: 'expirationDate',
@@ -1237,6 +1246,7 @@ export const parameterSchemas: EndpointParameters = {
                       type: 'number',
                       required: true,
                       placeholder: '12',
+                      defaultValue: 12,
                       validation: {
                         min: 1,
                         max: 12
@@ -1248,6 +1258,7 @@ export const parameterSchemas: EndpointParameters = {
                       type: 'number',
                       required: true,
                       placeholder: '2025',
+                      defaultValue: 2025,
                       validation: {
                         min: 2024
                       }
@@ -1259,7 +1270,8 @@ export const parameterSchemas: EndpointParameters = {
                   label: 'CVV',
                   type: 'number',
                   required: true,
-                  placeholder: '123'
+                  placeholder: '123',
+                  defaultValue: 123
                 }
               ]
             }
@@ -1615,7 +1627,8 @@ export const parameterSchemas: EndpointParameters = {
                   label: 'Card Number',
                   type: 'text',
                   required: true,
-                  placeholder: '4111111111111111'
+                  placeholder: '4111111111111111',
+                  defaultValue: '4111111111111111'
                 },
                 {
                   name: 'expirationDate',
@@ -1629,6 +1642,7 @@ export const parameterSchemas: EndpointParameters = {
                       type: 'number',
                       required: true,
                       placeholder: '12',
+                      defaultValue: 12,
                       validation: {
                         min: 1,
                         max: 12
@@ -1640,6 +1654,7 @@ export const parameterSchemas: EndpointParameters = {
                       type: 'number',
                       required: true,
                       placeholder: '2025',
+                      defaultValue: 2025,
                       validation: {
                         min: 2024
                       }
@@ -1651,7 +1666,8 @@ export const parameterSchemas: EndpointParameters = {
                   label: 'CVV',
                   type: 'number',
                   required: true,
-                  placeholder: '123'
+                  placeholder: '123',
+                  defaultValue: 123
                 }
               ]
             }
