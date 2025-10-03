@@ -28,6 +28,12 @@ function App() {
     if (settings.clientSecret) setClientSecret(settings.clientSecret);
     if (settings.mockServerUrl) setMockServerUrl(settings.mockServerUrl);
     if (settings.openAIKey) setOpenAIKey(settings.openAIKey);
+
+    // Also check environment variable for OpenAI key
+    const envOpenAIKey = import.meta.env.VITE_OPENAI_API_KEY;
+    if (envOpenAIKey && !settings.openAIKey) {
+      setOpenAIKey(envOpenAIKey);
+    }
   }, []);
 
   const getTotalSteps = () => {

@@ -60,17 +60,22 @@ ${endpointContext}
 Your task is to analyze the user's use case and determine:
 1. Which endpoint best matches their needs
 2. How confident you are (0-100%)
-3. What parameter values can be extracted from their description
+3. Answer the decision tree questions based on their use case
+
+Decision tree questions:
+- docType: "single" (one document), "multi" (multiple separate), "merge" (combine multiple), "pdfSplit" (split PDF)
+- templateUsage: "true" (use saved template) or "false" (configure manually)
+- recipientStyle: "explicit" (addresses in API), "template" (from saved list), "addressCapture" (extract from doc)
+- personalized: "true" (unique per recipient) or "false" (same for all)
 
 Respond with JSON only in this format:
 {
   "endpoint": "/jobs/single-doc-job-template",
   "confidence": 85,
   "suggestedAnswers": {
-    "questionId": "value"
-  },
-  "parameters": {
-    "parameterName": "extractedValue"
+    "docType": "single",
+    "templateUsage": "true",
+    "recipientStyle": "explicit"
   },
   "reasoning": "Brief explanation of why this endpoint was chosen"
 }`;
@@ -106,6 +111,9 @@ Respond with JSON only in this format:
 
     // Parse JSON response
     const parsed = JSON.parse(aiResponse);
+
+    console.log('AI Response:', parsed);
+    console.log('Suggested Answers:', parsed.suggestedAnswers);
 
     return {
       success: true,
