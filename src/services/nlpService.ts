@@ -1,7 +1,7 @@
 // NLP Service for parsing natural language use cases into endpoint mappings
 // Uses OpenAI GPT-4 to extract intent, endpoint, and parameters
 
-import { endpointMappings } from '../data/endpointMappings';
+import endpointMap from '../data/endpointMap';
 
 export interface NLPParseResult {
   success: boolean;
@@ -48,8 +48,8 @@ export async function parseUseCase(
 
   try {
     // Build context about available endpoints
-    const endpointContext = Object.entries(endpointMappings)
-      .map(([key, mapping]) => `${key}: ${mapping.label} - ${mapping.description}`)
+    const endpointContext = Object.entries(endpointMap)
+      .map(([key, info]) => `${key}: ${info.description}`)
       .join('\n');
 
     const systemPrompt = `You are an AI assistant that maps natural language use cases to API endpoints.
