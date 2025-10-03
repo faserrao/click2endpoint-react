@@ -21,6 +21,11 @@ export interface AuditLogEntry {
     answers: Record<string, string>;
   };
   accepted: boolean; // Did user follow AI suggestion?
+  feedback?: {
+    helpful: boolean;
+    comment?: string;
+    timestamp: string;
+  };
 }
 
 /**
@@ -166,20 +171,43 @@ export function getAuditLogs(): AuditLogEntry[] {
 }
 
 /**
+ * Update feedback on the most recent audit log entry
+ */
+export function updateLatestFeedback(helpful: boolean, comment?: string): void {
+  try {
+    const logs = getAuditLogs();
+    if (logs.length > 0) {
+      const latest = logs[logs.length - 1];
+      latest.feedback = {
+        helpful,
+        comment,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('click2endpoint_audit_log', JSON.stringify(logs));
+    }
+  } catch (error) {
+    console.error('Failed to update feedback:', error);
+  }
+}
+
+/**
  * Calculate AI accuracy based on audit logs
  */
 export function calculateAccuracy(): {
   totalSuggestions: number;
   accepted: number;
+  helpful: number;
   accuracy: number;
 } {
   const logs = getAuditLogs();
   const totalSuggestions = logs.length;
   const accepted = logs.filter(log => log.accepted).length;
+  const helpful = logs.filter(log => log.feedback?.helpful === true).length;
 
   return {
     totalSuggestions,
     accepted,
+    helpful,
     accuracy: totalSuggestions > 0 ? (accepted / totalSuggestions) * 100 : 0
   };
 }

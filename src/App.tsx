@@ -202,13 +202,14 @@ function App() {
         )}
         
         {currentView === 'result' && (
-          <ResultCard 
-            answers={answers} 
-            endpointMap={endpointMap} 
+          <ResultCard
+            answers={answers}
+            endpointMap={endpointMap}
             onRestart={handleRestart}
             mockServerUrl={mockServerUrl}
             clientId={clientId}
             clientSecret={clientSecret}
+            showAIFeedback={!!aiSuggestion}
           />
         )}
       </div>

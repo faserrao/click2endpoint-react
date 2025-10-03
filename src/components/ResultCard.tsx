@@ -3,6 +3,8 @@ import { getEndpoint } from '../data/questions';
 import { CodeGenerator, type ExecutionResult } from './CodeGenerator';
 import { ExecutionOutput } from './ExecutionOutput';
 import { ParameterCollector } from './ParameterCollector';
+import { AIFeedback } from './AIFeedback';
+import { updateLatestFeedback } from '../services/nlpService';
 
 interface ResultCardProps {
   answers: Record<string, string>;
@@ -11,16 +13,21 @@ interface ResultCardProps {
   mockServerUrl?: string;
   clientId?: string;
   clientSecret?: string;
+  showAIFeedback?: boolean;
 }
 
-export const ResultCard: React.FC<ResultCardProps> = ({ 
-  answers, 
-  endpointMap, 
-  onRestart, 
+export const ResultCard: React.FC<ResultCardProps> = ({
+  answers,
+  endpointMap,
+  onRestart,
   mockServerUrl,
   clientId,
-  clientSecret 
+  clientSecret,
+  showAIFeedback = false
 }) => {
+  const handleFeedback = (helpful: boolean, comment?: string) => {
+    updateLatestFeedback(helpful, comment);
+  };
   const [showCodeGenerator, setShowCodeGenerator] = useState(false);
   const [showExecutionOutput, setShowExecutionOutput] = useState(false);
   const [showParameters, setShowParameters] = useState(false);
@@ -102,12 +109,19 @@ export const ResultCard: React.FC<ResultCardProps> = ({
           </pre>
         </div>
 
+        {/* AI Feedback Section */}
+        {showAIFeedback && (
+          <div className="mb-6">
+            <AIFeedback onFeedback={handleFeedback} />
+          </div>
+        )}
+
         {/* Parameters Section */}
         {!showParameters && (
           <div className="mb-6 bg-[#2A2A2A] p-6 rounded-lg">
             <h4 className="text-lg font-semibold text-gray-200 mb-3">Need to customize parameters?</h4>
             <p className="text-gray-400 mb-4">Fill in actual values for the API parameters to generate ready-to-use code.</p>
-            <button 
+            <button
               className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
               onClick={() => setShowParameters(true)}
             >
