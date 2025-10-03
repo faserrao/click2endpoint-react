@@ -38,3 +38,5 @@ dist-ssr
 build/
 coverage/.DS_Store
 response.json
+
+.login.info

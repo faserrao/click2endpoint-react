@@ -11,14 +11,16 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
   const [clientId, setClientId] = useState('');
   const [clientSecret, setClientSecret] = useState('');
   const [mockServerUrl, setMockServerUrl] = useState('');
+  const [openAIKey, setOpenAIKey] = useState('');
 
   useEffect(() => {
     if (open) {
       const settings = loadSettings();
       setClientId(settings.clientId || '');
       setMockServerUrl(settings.mockServerUrl || '');
-      // Never pre-fill secret (security best practice)
+      // Never pre-fill secrets (security best practice)
       setClientSecret('');
+      setOpenAIKey('');
     }
   }, [open]);
 
@@ -26,7 +28,8 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
     saveSettings({
       clientId,
       clientSecret,
-      mockServerUrl
+      mockServerUrl,
+      openAIKey
     });
     onClose();
   };
@@ -95,6 +98,33 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
               data-lpignore="true"
             />
             <p className="text-xs text-gray-500 mt-1">Secret is never stored for security</p>
+          </div>
+
+          {/* OpenAI API Key */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
+              OpenAI API Key (Optional)
+            </label>
+            <input
+              type="password"
+              value={openAIKey}
+              onChange={(e) => setOpenAIKey(e.target.value)}
+              placeholder="sk-..."
+              className="w-full bg-[#121212] border border-[#3A3A3A] rounded-lg p-3 text-gray-200 placeholder-gray-500 focus:border-[#00ADB5] focus:outline-none"
+              data-1p-ignore
+              data-lpignore="true"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Required for AI-assisted mode. Get your key from{' '}
+              <a
+                href="https://platform.openai.com/api-keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#00ADB5] hover:underline"
+              >
+                OpenAI Platform
+              </a>
+            </p>
           </div>
         </div>
 

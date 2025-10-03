@@ -4,6 +4,7 @@ export interface Settings {
   clientId: string;
   clientSecret: string;
   mockServerUrl: string;
+  openAIKey: string;
 }
 
 const SETTINGS_KEY = 'click2endpoint_settings';
@@ -29,6 +30,7 @@ export function loadSettings(): Settings {
   return {
     clientId: '',
     clientSecret: '',
-    mockServerUrl: ''
+    mockServerUrl: '',
+    openAIKey: ''
   };
 }

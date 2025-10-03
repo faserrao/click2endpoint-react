@@ -3,8 +3,10 @@ import { ProgressBar } from './components/ProgressBar';
 import { QuestionCard } from './components/QuestionCard';
 import { ResultCard } from './components/ResultCard';
 import { SettingsModal } from './components/SettingsModal';
+import { AIInput } from './components/AIInput';
 import { loadSettings } from './utils/settings';
 import { getDefaultMockServerUrl } from './services/postmanApi';
+import { NLPParseResult, logAuditEntry } from './services/nlpService';
 import endpointMap from './data/endpointMap';
 import { Settings } from 'lucide-react';
 
@@ -14,7 +16,10 @@ function App() {
   const [mockServerUrl, setMockServerUrl] = useState<string>(getDefaultMockServerUrl());
   const [clientId, setClientId] = useState<string>('');
   const [clientSecret, setClientSecret] = useState<string>('');
+  const [openAIKey, setOpenAIKey] = useState<string>('');
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+  const [aiSuggestion, setAiSuggestion] = useState<NLPParseResult | null>(null);
+  const [userInput, setUserInput] = useState<string>('');
 
   // Load settings from localStorage on mount
   useEffect(() => {
@@ -22,6 +27,7 @@ function App() {
     if (settings.clientId) setClientId(settings.clientId);
     if (settings.clientSecret) setClientSecret(settings.clientSecret);
     if (settings.mockServerUrl) setMockServerUrl(settings.mockServerUrl);
+    if (settings.openAIKey) setOpenAIKey(settings.openAIKey);
   }, []);
 
   const getTotalSteps = () => {
@@ -44,14 +50,47 @@ function App() {
   const handleStartWizard = () => {
     setCurrentView('questions');
     setAnswers({});
+    setAiSuggestion(null);
+  };
+
+  const handleAIParsed = (result: NLPParseResult, input: string) => {
+    setAiSuggestion(result);
+    setUserInput(input);
+    // If AI has high confidence and suggested answers, pre-populate them
+    if (result.confidence >= 70 && result.suggestedAnswers) {
+      setAnswers(result.suggestedAnswers);
+    }
+    setCurrentView('questions');
   };
 
   const handleRestart = () => {
     setCurrentView('welcome');
     setAnswers({});
+    setAiSuggestion(null);
+    setUserInput('');
   };
 
   const handleComplete = () => {
+    // Log audit entry if AI suggestion was made
+    if (aiSuggestion && userInput) {
+      const finalEndpoint = Object.keys(endpointMap).find(key => {
+        const mapping = endpointMap[key];
+        return Object.entries(answers).every(([q, a]) => mapping.answers[q] === a);
+      });
+
+      if (finalEndpoint) {
+        logAuditEntry({
+          timestamp: new Date().toISOString(),
+          userInput,
+          aiSuggestion,
+          userSelection: {
+            endpoint: finalEndpoint,
+            answers
+          },
+          accepted: aiSuggestion.endpoint === finalEndpoint
+        });
+      }
+    }
     setCurrentView('result');
   };
 
@@ -82,6 +121,7 @@ function App() {
           if (settings.clientId) setClientId(settings.clientId);
           if (settings.clientSecret) setClientSecret(settings.clientSecret);
           if (settings.mockServerUrl) setMockServerUrl(settings.mockServerUrl);
+          if (settings.openAIKey) setOpenAIKey(settings.openAIKey);
         }}
       />
 
@@ -94,10 +134,20 @@ function App() {
 
         {currentView === 'welcome' && (
           <div className="space-y-8">
+            {/* AI Input Component */}
+            {openAIKey && (
+              <AIInput
+                onParsed={handleAIParsed}
+                openAIKey={openAIKey}
+              />
+            )}
+
             <div className="bg-[#1E1E1E] p-12 rounded-xl text-center">
               <h1 className="text-4xl font-bold text-[#00ADB5] mb-4">Click2Endpoint</h1>
               <p className="text-gray-400 mb-8 text-lg">
-                Find the perfect C2M API endpoint for your document submission needs
+                {openAIKey
+                  ? 'Or use the traditional step-by-step wizard'
+                  : 'Find the perfect C2M API endpoint for your document submission needs'}
               </p>
               <button
                 className="px-8 py-4 bg-[#00ADB5] hover:bg-[#00BFC9] rounded-lg text-lg font-semibold transition-colors"
@@ -108,16 +158,18 @@ function App() {
             </div>
 
             {/* Settings Reminder Card */}
-            {(!clientId || !clientSecret) && (
+            {(!clientId || !clientSecret || !openAIKey) && (
               <div className="bg-[#1E1E1E] p-6 rounded-xl border-2 border-[#00ADB5] border-opacity-30">
                 <div className="flex items-start gap-4">
                   <div className="text-3xl">⚙️</div>
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-[#00ADB5] mb-2">
-                      Configure API Credentials
+                      {!openAIKey ? 'Enable AI-Assisted Mode' : 'Configure API Credentials'}
                     </h3>
                     <p className="text-gray-400 text-sm mb-3">
-                      Click the gear icon (⚙️) in the top-right corner to set your Client ID and Client Secret.
+                      {!openAIKey
+                        ? 'Add your OpenAI API key to unlock AI-assisted endpoint selection with natural language.'
+                        : 'Click the gear icon (⚙️) in the top-right corner to set your Client ID and Client Secret.'}
                     </p>
                     <button
                       onClick={() => setSettingsOpen(true)}
@@ -134,11 +186,12 @@ function App() {
         )}
         
         {currentView === 'questions' && (
-          <QuestionCard 
-            answers={answers} 
-            setAnswers={setAnswers} 
+          <QuestionCard
+            answers={answers}
+            setAnswers={setAnswers}
             onComplete={handleComplete}
             onBack={handleBack}
+            aiSuggestion={aiSuggestion}
           />
         )}
         
