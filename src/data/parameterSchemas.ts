@@ -34,6 +34,7 @@ export const parameterSchemas: EndpointParameters = {
       type: 'text',
       required: true,
       placeholder: 'template_123',
+      defaultValue: 'legal-contract-template',
       description: 'The ID of the saved job template to use'
     },
     {
@@ -53,6 +54,7 @@ export const parameterSchemas: EndpointParameters = {
               type: 'text',
               required: true,
               placeholder: 'doc_456',
+              defaultValue: 'doc_sample_contract_001',
               description: 'ID of a document previously uploaded to the system'
             }
           ]
@@ -270,6 +272,7 @@ export const parameterSchemas: EndpointParameters = {
                   type: 'text',
                   required: true,
                   placeholder: 'list_789',
+                  defaultValue: 'list_clients_q4_2024',
                   description: 'ID of a pre-uploaded address list'
                 }
               ]
@@ -509,6 +512,7 @@ export const parameterSchemas: EndpointParameters = {
       type: 'text',
       required: true,
       placeholder: 'template_123',
+      defaultValue: 'legal-contract-template',
       description: 'The ID of the saved job template to use'
     },
     {
@@ -856,6 +860,7 @@ export const parameterSchemas: EndpointParameters = {
               type: 'text',
               required: true,
               placeholder: 'doc_456',
+              defaultValue: 'doc_sample_contract_001',
               description: 'ID of a document previously uploaded to the system'
             }
           ]
@@ -1073,6 +1078,7 @@ export const parameterSchemas: EndpointParameters = {
                   type: 'text',
                   required: true,
                   placeholder: 'list_789',
+                  defaultValue: 'list_clients_q4_2024',
                   description: 'ID of a pre-uploaded address list'
                 }
               ]
@@ -1785,6 +1791,7 @@ export const parameterSchemas: EndpointParameters = {
       type: 'text',
       required: true,
       placeholder: 'template_123',
+      defaultValue: 'legal-contract-template',
       description: 'The ID of the saved job template to use'
     },
     {
