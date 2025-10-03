@@ -32,12 +32,17 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     }
   }, [answers, onComplete]);
 
+  // Selecting an option no longer auto-advances - just updates local selection
   const handleSelect = (value: string) => {
     setSelectedValue(value);
-    if (currentQuestionId) {
+  };
+
+  // Next button handler: commits the selection and moves forward
+  const handleNext = () => {
+    if (selectedValue && currentQuestionId) {
       setAnswers({
         ...answers,
-        [currentQuestionId]: value
+        [currentQuestionId]: selectedValue
       });
     }
   };
@@ -85,9 +90,20 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       <div className="flex justify-between">
         <button
           onClick={handleBack}
-          className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+          className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors font-semibold"
         >
           ← Back
+        </button>
+        <button
+          onClick={handleNext}
+          disabled={!selectedValue}
+          className={`px-6 py-3 rounded-lg transition-colors font-semibold ${
+            selectedValue
+              ? 'bg-[#00ADB5] hover:bg-[#00BFC9]'
+              : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+          }`}
+        >
+          Next →
         </button>
       </div>
     </div>
