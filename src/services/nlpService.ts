@@ -82,7 +82,7 @@ Respond with JSON only in this format:
         'Authorization': `Bearer ${openAIKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userInput }
