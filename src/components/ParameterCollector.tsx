@@ -5,18 +5,37 @@ import { parameterSchemas, type ParameterField } from '../data/parameterSchemas'
 interface ParameterCollectorProps {
   endpointPath: string;
   onParametersChange: (parameters: any) => void;
+  wizardAnswers?: Record<string, string>;
 }
 
-export const ParameterCollector: React.FC<ParameterCollectorProps> = ({ 
-  endpointPath, 
-  onParametersChange 
+export const ParameterCollector: React.FC<ParameterCollectorProps> = ({
+  endpointPath,
+  onParametersChange,
+  wizardAnswers = {}
 }) => {
   const [formData, setFormData] = useState<any>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [oneOfSelections, setOneOfSelections] = useState<Record<string, string>>({});
 
-  const schema = parameterSchemas[endpointPath] || [];
+  const rawSchema = parameterSchemas[endpointPath] || [];
+
+  // Filter schema based on template content
+  const schema = rawSchema.filter(field => {
+    const { templateContent } = wizardAnswers;
+
+    // If template contains address list, hide address list ID field
+    if (templateContent === 'addressList' && field.name === 'addressListId') {
+      return false;
+    }
+
+    // If template contains document, hide document source field
+    if (templateContent === 'document' && field.name === 'documentSourceIdentifier') {
+      return false;
+    }
+
+    return true;
+  });
 
   useEffect(() => {
     // Initialize form with default values

@@ -1,6 +1,6 @@
 import type { EndpointInfo } from '../data/endpointMap';
 
-const AUTH_BASE_URL = import.meta.env.VITE_AUTH_BASE_URL || "https://j0dos52r5e.execute-api.us-east-1.amazonaws.com/dev";
+const AUTH_BASE_URL = import.meta.env.VITE_AUTH_BASE_URL || "https://j0dos52r5e.execute-api.us-east-1.amazonaws.com/dev/auth";
 const DEFAULT_MOCK_URL = import.meta.env.VITE_DEFAULT_MOCK_URL || "https://cd140b74-ed23-4980-834b-a966ac3393c1.mock.pstmn.io";
 
 export interface CodeGenerationOptions {
@@ -101,7 +101,7 @@ export function generatePythonCode(options: CodeGenerationOptions): string {
     includeAuth = true, 
     customParameters,
     clientId = 'test-client-123',
-    clientSecret = 'super-secret-password-123'
+    clientSecret = 'test-secret-456'
   } = options;
   const timestamp = new Date().toISOString();
   
@@ -271,7 +271,7 @@ export function generateJavaScriptCode(options: CodeGenerationOptions): string {
     includeAuth = true, 
     customParameters,
     clientId = 'test-client-123',
-    clientSecret = 'super-secret-password-123'
+    clientSecret = 'test-secret-456'
   } = options;
   const timestamp = new Date().toISOString();
   
@@ -459,7 +459,7 @@ export function generateCurlCode(options: CodeGenerationOptions): string {
     includeAuth = true, 
     customParameters,
     clientId = 'test-client-123',
-    clientSecret = 'super-secret-password-123'
+    clientSecret = 'test-secret-456'
   } = options;
   const timestamp = new Date().toISOString();
   

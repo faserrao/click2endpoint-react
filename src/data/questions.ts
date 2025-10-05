@@ -109,18 +109,44 @@ export const questions: Record<string, Question> = {
         icon: '👥'
       }
     ]
+  },
+
+  templateContent: {
+    id: 'templateContent',
+    title: 'What is stored in your job template?',
+    subtitle: 'Templates can contain either address lists OR documents (but not both)',
+    options: [
+      {
+        value: 'addressList',
+        label: 'Address list',
+        description: 'Template contains recipient addresses (you will provide documents)',
+        icon: '📋'
+      },
+      {
+        value: 'document',
+        label: 'Document',
+        description: 'Template contains the document (you will provide addresses)',
+        icon: '📄'
+      },
+      {
+        value: 'neither',
+        label: 'Neither',
+        description: 'Template only contains job options (you provide both)',
+        icon: '⚙️'
+      }
+    ]
   }
 };
 
 // Decision tree logic to determine next question
 export function getNextQuestion(answers: Record<string, string>): string | null {
-  const { docType, templateUsage, recipientStyle } = answers;
-  
+  const { docType, templateUsage, recipientStyle, templateContent } = answers;
+
   // If no document type selected yet, start with that
   if (!docType) {
     return 'docType';
   }
-  
+
   // For PDF split, skip template question and go straight to recipient style
   if (docType === 'pdfSplit') {
     if (!recipientStyle) {
@@ -128,22 +154,27 @@ export function getNextQuestion(answers: Record<string, string>): string | null 
     }
     return null; // Done with questions
   }
-  
+
   // For other document types, ask about template usage
   if (!templateUsage) {
     return 'templateUsage';
   }
-  
+
+  // If using a template, ask what's stored in it BEFORE asking about recipient style
+  if (templateUsage === 'true' && !templateContent) {
+    return 'templateContent';
+  }
+
   // Then ask about recipient style
   if (!recipientStyle) {
     return 'recipientStyle';
   }
-  
+
   // For multi/merge documents, ask about personalization
   if ((docType === 'multi' || docType === 'merge') && !answers.personalized) {
     return 'personalized';
   }
-  
+
   // All questions answered
   return null;
 }

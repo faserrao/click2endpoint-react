@@ -118,9 +118,10 @@ export const ResultCard: React.FC<ResultCardProps> = ({
 
         {showParameters && (
           <div className="mb-6">
-            <ParameterCollector 
+            <ParameterCollector
               endpointPath={endpoint.path}
               onParametersChange={setParameters}
+              wizardAnswers={answers}
             />
           </div>
         )}

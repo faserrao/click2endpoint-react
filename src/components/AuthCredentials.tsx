@@ -7,10 +7,10 @@ interface AuthCredentialsProps {
   defaultClientSecret?: string;
 }
 
-export const AuthCredentials: React.FC<AuthCredentialsProps> = ({ 
+export const AuthCredentials: React.FC<AuthCredentialsProps> = ({
   onCredentialsChange,
   defaultClientId = 'test-client-123',
-  defaultClientSecret = 'super-secret-password-123'
+  defaultClientSecret = 'test-secret-456'
 }) => {
   const [clientId, setClientId] = useState(defaultClientId);
   const [clientSecret, setClientSecret] = useState(defaultClientSecret);
