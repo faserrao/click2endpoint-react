@@ -83,7 +83,7 @@ export const CodeGenerator: React.FC<CodeGeneratorProps> = ({
     setIsRunning(true);
     
     try {
-      const response = await fetch('http://localhost:3001/api/execute', {
+      const response = await fetch('https://qymolz6zgxpphiskaxjon2lg3q0nfbgk.lambda-url.us-east-1.on.aws/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
