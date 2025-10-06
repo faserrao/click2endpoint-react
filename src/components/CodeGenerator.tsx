@@ -93,17 +93,27 @@ export const CodeGenerator: React.FC<CodeGeneratorProps> = ({
       if (needsNetwork) {
         // Use Lambda backend for network requests
         try {
+          console.log('Calling Lambda with:', { code: code.substring(0, 100), language: selectedLanguage });
           const response = await fetch('https://qymolz6zgxpphiskaxjon2lg3q0nfbgk.lambda-url.us-east-1.on.aws/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code, language: selectedLanguage }),
           });
+          console.log('Lambda response status:', response.status, response.statusText);
+          console.log('Lambda response headers:', Object.fromEntries(response.headers.entries()));
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
           result = await response.json();
+          console.log('Lambda result:', result);
         } catch (error) {
+          console.error('Lambda execution error:', error);
           result = {
             success: false,
             output: '',
-            error: 'Network execution failed. Backend server may be unavailable.'
+            error: `Network execution failed: ${error.message}`
           };
         }
       } else if (selectedLanguage === 'javascript') {
