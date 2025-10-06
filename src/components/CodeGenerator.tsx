@@ -85,7 +85,28 @@ export const CodeGenerator: React.FC<CodeGeneratorProps> = ({
     try {
       let result;
 
-      if (selectedLanguage === 'javascript') {
+      // Check if code needs network access (urllib, requests, fetch, curl)
+      const needsNetwork = code.includes('urllib') || code.includes('requests') ||
+                          code.includes('fetch(') || code.includes('curl') ||
+                          selectedLanguage === 'curl';
+
+      if (needsNetwork) {
+        // Use Lambda backend for network requests
+        try {
+          const response = await fetch('https://qymolz6zgxpphiskaxjon2lg3q0nfbgk.lambda-url.us-east-1.on.aws/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, language: selectedLanguage }),
+          });
+          result = await response.json();
+        } catch (error) {
+          result = {
+            success: false,
+            output: '',
+            error: 'Network execution failed. Backend server may be unavailable.'
+          };
+        }
+      } else if (selectedLanguage === 'javascript') {
         // Run JavaScript directly in browser
         try {
           const originalLog = console.log;
@@ -102,7 +123,7 @@ export const CodeGenerator: React.FC<CodeGeneratorProps> = ({
           result = { success: false, output: '', error: error.message };
         }
       } else if (selectedLanguage === 'python') {
-        // Run Python using Pyodide
+        // Run Python using Pyodide (browser)
         try {
           const pyodide = await (window as any).loadPyodide({
             indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/'
@@ -113,13 +134,6 @@ export const CodeGenerator: React.FC<CodeGeneratorProps> = ({
         } catch (error) {
           result = { success: false, output: '', error: error.message };
         }
-      } else {
-        // cURL needs backend - show helpful message
-        result = {
-          success: false,
-          output: '',
-          error: 'cURL execution requires a backend server. Use Python or JavaScript for browser execution.'
-        };
       }
 
       const executionResult: ExecutionResult = {
