@@ -81,26 +81,53 @@ export const CodeGenerator: React.FC<CodeGeneratorProps> = ({
 
   const handleRunCode = async () => {
     setIsRunning(true);
-    
+
     try {
-      const response = await fetch('https://qymolz6zgxpphiskaxjon2lg3q0nfbgk.lambda-url.us-east-1.on.aws/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code,
-          language: selectedLanguage
-        }),
-      });
-      
-      const result = await response.json();
+      let result;
+
+      if (selectedLanguage === 'javascript') {
+        // Run JavaScript directly in browser
+        try {
+          const originalLog = console.log;
+          let output = '';
+          console.log = (...args) => {
+            output += args.join(' ') + '\n';
+          };
+
+          eval(code);
+          console.log = originalLog;
+
+          result = { success: true, output, error: '' };
+        } catch (error) {
+          result = { success: false, output: '', error: error.message };
+        }
+      } else if (selectedLanguage === 'python') {
+        // Run Python using Pyodide
+        try {
+          const pyodide = await (window as any).loadPyodide({
+            indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/'
+          });
+
+          const output = await pyodide.runPythonAsync(code);
+          result = { success: true, output: String(output || ''), error: '' };
+        } catch (error) {
+          result = { success: false, output: '', error: error.message };
+        }
+      } else {
+        // cURL needs backend - show helpful message
+        result = {
+          success: false,
+          output: '',
+          error: 'cURL execution requires a backend server. Use Python or JavaScript for browser execution.'
+        };
+      }
+
       const executionResult: ExecutionResult = {
         ...result,
         timestamp: new Date().toISOString(),
         language: selectedLanguage
       };
-      
+
       if (onExecutionResult) {
         onExecutionResult(executionResult);
       }
@@ -112,7 +139,7 @@ export const CodeGenerator: React.FC<CodeGeneratorProps> = ({
         timestamp: new Date().toISOString(),
         language: selectedLanguage
       };
-      
+
       if (onExecutionResult) {
         onExecutionResult(executionResult);
       }
